@@ -73,7 +73,7 @@ def add_contact(name, phone):
     })
 
     save_contacts(contacts)
-    print("✅ Contact added successfully.")
+    print(f'✅ Contact {name} ({phone}) added successfully.')
 
 
 def delete_contact(identifier):
