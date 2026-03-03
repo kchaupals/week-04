@@ -7,28 +7,37 @@ import utils
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STORAGE_FILE = os.path.join(BASE_DIR, "shopping.json")
+print("Using storage file:", STORAGE_FILE)
 
 def load_list():
     '''Loads or creates JSON file for list'''
     if not os.path.exists(STORAGE_FILE):
-        with open(STORAGE_FILE, "w", encoding="utf-8") as f:
-            json.dump([], f)
-
+        return []
+    
     try:
         with open(STORAGE_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except json.JSONDecodeError:
+        print("⚠ JSON corrupted. Resetting file.")
         return []
 
 def add_item(item, qty, price):
-    '''Fn to add item to list'''
+    '''Fn to add item to list / Validate for duplicates'''
     storage = load_list()
 
-    storage.append({
-        "item": item.capitalize(),
-        "qty": int(qty),
-        "price": price
-    })
+    temp_item = item.strip().lower()
+
+    for existing in storage:
+        if existing["item"].lower() == temp_item:
+            existing["qty"] += int(qty)
+            break
+    else:
+        storage.append({
+            "item": item.capitalize(),
+            "qty": int(qty),
+            "price": str(price)
+        })
+
     with open(STORAGE_FILE, "w", encoding="utf-8") as f:
         json.dump(storage, f, indent=2, ensure_ascii=False)
 
@@ -63,14 +72,10 @@ def list_total():
 
 def clear_list():
     '''Clears all entries on list'''
-    try:
-        os.makedirs(os.path.dirname(STORAGE_FILE) or ".", exist_ok=True)
-        with open(STORAGE_FILE, "w", encoding="utf-8") as f:
-            json.dump([], f)
-        print("✅ List cleared successfully.")
-    except OSError:
-        print("❌ Failed to clear the list.")
-
+    os.makedirs(os.path.dirname(STORAGE_FILE) or ".", exist_ok=True)
+    with open(STORAGE_FILE, "w", encoding="utf-8") as f:
+        json.dump([], f)
+   
 
 # Input validation 
 

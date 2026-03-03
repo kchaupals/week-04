@@ -1,22 +1,7 @@
 [
   {
-    "item": "Piens",
-    "qty": 3,
-    "price": "1.20"
-  },
-  {
     "item": "Maize",
-    "qty": 4,
+    "qty": 6,
     "price": "1.50"
-  },
-  {
-    "item": "Maize",
-    "qty": 5,
-    "price": "1.50"
-  },
-  {
-    "item": "Siers",
-    "qty": 10,
-    "price": "1.15"
   }
 ]
