@@ -42,14 +42,14 @@ def main():
         '''Shows shopping list'''
         storage.list_output()
     elif cmd == "add":
-        if len(cmd_args) != 2:
+        if len(cmd_args) != 3:
             print_help()
             return
-        item, price = cmd_args
-        storage.add_item(item, price)
+        item, qty, price = cmd_args
+        storage.add_item(item, qty, price)
     elif cmd == "total":
-        total, count = storage.list_total()
-        print(f"Total ammount {total} EUR (For {count} items)\n")
+        total, count, listQty = storage.list_total()
+        print(f"Total ammount {total} EUR ({listQty} pieces, {count} items)\n")
     elif cmd == "clear":
         storage.clear_list()
     else:

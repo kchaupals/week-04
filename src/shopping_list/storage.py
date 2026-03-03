@@ -19,17 +19,18 @@ def load_list():
     except json.JSONDecodeError:
         return []
 
-def add_item(item, price):
+def add_item(item, qty, price):
     '''Fn to add item to list'''
     storage = load_list()
 
     storage.append({
-        "item": item,
+        "item": item.capitalize(),
+        "qty": int(qty),
         "price": price
     })
     with open(STORAGE_FILE, "w", encoding="utf-8") as f:
         json.dump(storage, f, indent=2, ensure_ascii=False)
-    print(f'✅ Added {item} - ({price} EUR)')
+    print(f'✅ Added {item.capitalize()} x {qty} - ({price} EUR/piece) = {int(qty) * Decimal(price)} EUR')
 
 def list_output():
     '''Returns list of items and prices'''
@@ -41,7 +42,7 @@ def list_output():
         print("Shopping List is empty.")
         return
     for idx, item in enumerate(storage, start=1):
-        print(f"{'{: >5}'.format(idx)}. {item['item']} - {item['price']} EUR")
+        print(f"{'{: >5}'.format(idx)}. {item['item']} x {item['qty']} - {item['price']} EUR/piece = {Decimal(item['price']) * int(item['qty'])} EUR")
 
 def list_total():
     '''Returns total value of items added to list'''
@@ -53,17 +54,20 @@ def list_total():
     
     listTotal = Decimal("0.00")
     count = 0
+    listQty = 0 
     for item in storage:
         price = item.get("price", 0)
+        qty = item.get("qty", 0)
         try:
             listTotal += Decimal(str(price))
             count += 1
+            listQty += qty
         except (InvalidOperation, TypeError):
             print("Invalid values on shopping list")
             continue
 
         total = listTotal.quantize(Decimal("0.01"))
-    return total, count
+    return total, count, listQty
 
 
 def clear_list():

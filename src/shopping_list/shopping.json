@@ -1,14 +1,12 @@
 [
   {
-    "item": "kečups",
-    "price": "2.45"
-  },
-  {
-    "item": "maize",
+    "item": "Piens",
+    "qty": 3,
     "price": "1.20"
   },
   {
-    "item": "piens",
+    "item": "Maize",
+    "qty": 4,
     "price": "1.50"
   }
 ]
