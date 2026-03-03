@@ -1,9 +1,7 @@
 ''' Main CLI'''
-import storage
 import argparse
+import utils
 
-# Prints argparse info w/ how correctly to use script
-print(storage.print_help())
 
 def main():
     parser = argparse.ArgumentParser(add_help=False)
@@ -14,36 +12,35 @@ def main():
     args = parser.parse_args()
 
     if args.help or args.command is None:
-        storage.print_help()
+        utils.print_help()
         return
 
     cmd = args.command.lower()
     cmd_args = args.args
-    try:
-        if cmd == "list":
-            '''Shows shopping list'''
-            storage.list_output()
-        elif cmd == "add":
-            if len(cmd_args) != 3:
-                print("❌ Error: 'add' requires exactly 3 arguments -> <item> <quantity> <price>")
-                storage.print_help()
-                return
-            item, qty, price = storage.validate_args(*cmd_args)
-            storage.add_item(item, qty, price)
-        elif cmd == "total":
-            total, count, listQty = storage.list_total()
-            print(f"Total ammount {total} EUR ({listQty} pieces, {count} items)\n")
-        elif cmd == "clear":
-            storage.clear_list()
-        else:
-            print(f"❌ Unknown command: '{cmd}'")
-            storage.print_help()
 
-    except ValueError as e:
-        print(f"❌ Error: {e}")
-    except Exception as e:
-        print(f"❌ Unexpected error: {e}")
+    commands = {
+        "list": (utils.handle_list, 0),
+        "add": (utils.handle_add, 3),
+        "total": (utils.handle_total, 0),
+        "clear": (utils.handle_clear, 0),
+    }
+    
+    if cmd not in commands:
+        print(f"❌ Unknown command: '{cmd}'\n")
+        utils.print_help()
+        return
+    
+    handler, expected_args = commands[cmd]
 
+    if expected_args > 0 and len(cmd_args) != expected_args:
+        print(f"❌ Error: '{cmd}' requires exactly {expected_args} arguments\n")
+        utils.print_help()
+        return
+    
+    if expected_args > 0:
+        handler(*cmd_args)
+    else:
+        handler()
 
 if __name__ == "__main__":
     main()

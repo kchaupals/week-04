@@ -3,6 +3,7 @@
 import json
 import os
 from decimal import Decimal, InvalidOperation
+import utils
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STORAGE_FILE = os.path.join(BASE_DIR, "shopping.json")
@@ -30,19 +31,12 @@ def add_item(item, qty, price):
     })
     with open(STORAGE_FILE, "w", encoding="utf-8") as f:
         json.dump(storage, f, indent=2, ensure_ascii=False)
-    print(f'✅ Added {item.capitalize()} x {qty} - ({price} EUR/piece) = {int(qty) * Decimal(price)} EUR')
+    print(f'✅ Added {item.capitalize()} x {qty} - ({price} EUR/piece) = {utils.calc_line_total(item)} EUR')
 
-def list_output():
-    '''Returns list of items and prices'''
-    storage = load_list()
-    print("\n Shopping List")
-    print("-" * 30)
-
-    if not storage:
-        print("Shopping List is empty.")
-        return
-    for idx, item in enumerate(storage, start=1):
-        print(f"{'{: >5}'.format(idx)}. {item['item']} x {item['qty']} - {item['price']} EUR/piece = {Decimal(item['price']) * int(item['qty'])} EUR")
+def get_items():
+    '''Returns all items from list'''
+    return load_list()
+    
 
 def list_total():
     '''Returns total value of items added to list'''
@@ -106,25 +100,5 @@ def validate_args(item, qty, price):
     return item.strip(), qty, price
 
 
-# Help argparser text
 
-def print_help():
-    help_text = '''
-    Shopping List
 
-    Usage:
-        shop.py list
-        shop.py add "<item>" "<quantity>" "<price>"
-        shop.py total
-        shop.py clear
-
-    Commands:
-        list                            Shows current shopping list
-        add <item> <quantity> <price>   Add item with price to shopping list
-        total                           Shows total sum of items on shopping list
-        clear                           Clears current shopping list
-
-    Options:
-        -h, --help                      Show this help message and exit
-'''
-    return help_text
