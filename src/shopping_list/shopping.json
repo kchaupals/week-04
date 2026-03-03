@@ -1,7 +1,11 @@
 [
   {
     "item": "Maize",
-    "qty": 6,
+    "qty": 13,
     "price": "1.50"
+  },
+  {
+    "item": "Gurķis",
+    "qty": 5
   }
 ]

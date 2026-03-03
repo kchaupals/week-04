@@ -20,7 +20,7 @@ def main():
 
     commands = {
         "list": (utils.handle_list, 0),
-        "add": (utils.handle_add, 3),
+        "add": (utils.handle_add, 2),
         "total": (utils.handle_total, 0),
         "clear": (utils.handle_clear, 0),
     }

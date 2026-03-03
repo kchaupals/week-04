@@ -3,11 +3,12 @@
 import json
 import os
 from decimal import Decimal, InvalidOperation
-import utils
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STORAGE_FILE = os.path.join(BASE_DIR, "shopping.json")
-print("Using storage file:", STORAGE_FILE)
+PRICE_FILE = os.path.join(BASE_DIR, "prices.json")
+
+# Loading JSON files
 
 def load_list():
     '''Loads or creates JSON file for list'''
@@ -20,11 +21,24 @@ def load_list():
     except json.JSONDecodeError:
         print("⚠ JSON corrupted. Resetting file.")
         return []
+    
+def load_prices():
+    '''Loads or creates JSON file for prices'''
+    if not os.path.exists(PRICE_FILE):
+        return {}
+    
+    try:
+        with open(PRICE_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        print(f"⚠ JSON corrupted. Resetting file.")
+        return {}
 
-def add_item(item, qty, price):
+# Adding items to JSON files
+
+def add_item(item, qty):
     '''Fn to add item to list / Validate for duplicates'''
     storage = load_list()
-
     temp_item = item.strip().lower()
 
     for existing in storage:
@@ -35,31 +49,48 @@ def add_item(item, qty, price):
         storage.append({
             "item": item.capitalize(),
             "qty": int(qty),
-            "price": str(price)
         })
 
     with open(STORAGE_FILE, "w", encoding="utf-8") as f:
         json.dump(storage, f, indent=2, ensure_ascii=False)
 
+def save_prices(prices):
+    '''Saves prices to library'''
+    with open(PRICE_FILE, "w", encoding="utf-8") as f:
+        json.dump(prices, f, indent=2, ensure_ascii=False)
+
 def get_items():
     '''Returns all items from list'''
     return load_list()
-    
+
+def get_price(item):
+    prices = load_prices()
+    if not prices:
+        return None
+    return prices.get(item.strip().lower())
+
+def set_price(item, price):
+    prices = load_prices()
+    prices[item.strip().lower()] = str(price)
+    save_prices(prices)   
 
 def list_total():
     '''Returns total value of items added to list'''
     storage = load_list()
+    prices = load_prices()
         
     if not storage:
         print("The list is empty, add item to get total amount")
         return Decimal("0.00")
     
     listTotal = Decimal("0.00")
+
     for item in storage:
         try:
-            price = Decimal(str(item.get("price", 0)))
-            qty = int(item.get("qty", 0))
+            name = item["item"].lower()
+            qty = int(item["qty"])
 
+            price = Decimal(prices.get(name, "0"))
             lineTotal = price * qty
             listTotal += lineTotal
         except (InvalidOperation, TypeError):
