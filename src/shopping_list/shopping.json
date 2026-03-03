@@ -8,5 +8,15 @@
     "item": "Maize",
     "qty": 4,
     "price": "1.50"
+  },
+  {
+    "item": "Maize",
+    "qty": 5,
+    "price": "1.50"
+  },
+  {
+    "item": "Siers",
+    "qty": 10,
+    "price": "1.15"
   }
 ]

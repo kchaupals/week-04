@@ -95,7 +95,9 @@ def handle_total():
         return
     
     try: 
-        total, count, list_qty = storage.list_total()
+        total = storage.list_total()
+        count = len(items)
+        list_qty = count_units(items)
         print(f"\n Total amount: {total} EUR ({list_qty} pieces, {count} items)\n")
     except ValueError as e:
         print(f"❌ Error: {e}")

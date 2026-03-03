@@ -31,7 +31,6 @@ def add_item(item, qty, price):
     })
     with open(STORAGE_FILE, "w", encoding="utf-8") as f:
         json.dump(storage, f, indent=2, ensure_ascii=False)
-    print(f'✅ Added {item.capitalize()} x {qty} - ({price} EUR/piece) = {utils.calc_line_total(item)} EUR')
 
 def get_items():
     '''Returns all items from list'''
@@ -47,21 +46,19 @@ def list_total():
         return Decimal("0.00")
     
     listTotal = Decimal("0.00")
-    count = 0
-    listQty = 0 
     for item in storage:
-        price = item.get("price", 0)
-        qty = item.get("qty", 0)
         try:
-            listTotal += Decimal(str(price))
-            count += 1
-            listQty += qty
+            price = Decimal(str(item.get("price", 0)))
+            qty = int(item.get("qty", 0))
+
+            lineTotal = price * qty
+            listTotal += lineTotal
         except (InvalidOperation, TypeError):
             print("Invalid values on shopping list")
             continue
 
         total = listTotal.quantize(Decimal("0.01"))
-    return total, count, listQty
+    return total
 
 
 def clear_list():
