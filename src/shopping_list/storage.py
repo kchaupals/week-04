@@ -5,18 +5,52 @@ import os
 from decimal import Decimal, InvalidOperation
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STORAGE_FILE = os.path.join(BASE_DIR, "shopping.json")
+
+LISTS_DIR = os.path.join(BASE_DIR, "lists")
+os.makedirs(LISTS_DIR, exist_ok=True)
+# Prices file is used for all lists that exists
 PRICE_FILE = os.path.join(BASE_DIR, "prices.json")
+# By default using shopping.json in base dir
+default_list_file = os.path.join(BASE_DIR, "shopping.json")
+active_list_file = default_list_file
+
+# Getting active list and etc
+
+def set_active_list(list_name: str):
+    '''Switch active shopping list'''
+    global active_list_file
+
+    # If 'default' use shopping.json in base dir
+    if list_name.lower() == "default":
+        active_list_file = default_list_file
+        if not os.path.exists(active_list_file):
+            with open(active_list_file, "w", encoding="utf-8") as f:
+                json.dump([], f)
+    else:
+        # Any other list goes to lists/ folder
+        active_list_file = os.path.join(LISTS_DIR, f"{list_name}.json")
+        if not os.path.exists(active_list_file):
+            with open(active_list_file, "w", encoding="utf-8") as f:
+                json.dump([], f)
+def save_list(items):
+    with open(active_list_file, "w", encoding="utf-8") as f:
+        json.dump(items, f, indent=2, ensure_ascii=False)           
+
+def get_active_list_name():
+    name = os.path.basename(active_list_file).replace(".json", "")
+    if active_list_file == default_list_file:
+        return "default"
+    return name
 
 # Loading JSON files
 
 def load_list():
     '''Loads or creates JSON file for list'''
-    if not os.path.exists(STORAGE_FILE):
+    if not os.path.exists(active_list_file):
         return []
     
     try:
-        with open(STORAGE_FILE, "r", encoding="utf-8") as f:
+        with open(active_list_file, "r", encoding="utf-8") as f:
             return json.load(f)
     except json.JSONDecodeError:
         print("⚠ JSON corrupted. Resetting file.")
@@ -51,7 +85,7 @@ def add_item(item, qty):
             "qty": int(qty),
         })
 
-    with open(STORAGE_FILE, "w", encoding="utf-8") as f:
+    with open(active_list_file, "w", encoding="utf-8") as f:
         json.dump(storage, f, indent=2, ensure_ascii=False)
 
 def save_prices(prices):
@@ -103,8 +137,8 @@ def list_total():
 
 def clear_list():
     '''Clears all entries on list'''
-    os.makedirs(os.path.dirname(STORAGE_FILE) or ".", exist_ok=True)
-    with open(STORAGE_FILE, "w", encoding="utf-8") as f:
+    os.makedirs(os.path.dirname(active_list_file) or ".", exist_ok=True)
+    with open(active_list_file, "w", encoding="utf-8") as f:
         json.dump([], f)
    
 

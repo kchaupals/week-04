@@ -170,21 +170,23 @@ def handle_clear():
 
 def print_help():
     help_text = '''
-    Shopping List
+    🛒 Shopping List CLI
 
     Usage:
-        shop.py list
-        shop.py add "<item>" "<quantity>" "<price>"
-        shop.py total
-        shop.py clear
+        python shop.py [-l LIST] <command> [args]
+        python shop.py -l EXAMPLE add <item> <qty>
+        python shop.py add <item> <quantity>
+        python shop.py total
+        python shop.py clear
 
     Commands:
         list                            Shows current shopping list
-        add <item> <quantity> <price>   Add item with price to shopping list
+        add <item> <quantity>           Add item to shopping list
         total                           Shows total sum of items on shopping list
         clear                           Clears current shopping list
 
     Options:
+        -l, --list                      Choose shopping lists (default uses shopping.json)
         -h, --help                      Show this help message and exit
 '''
     print(help_text)
