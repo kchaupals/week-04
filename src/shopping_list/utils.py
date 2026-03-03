@@ -166,6 +166,19 @@ def handle_clear():
     except OSError as e:
         print(f"❌ File error: {e}")
 
+def handle_export(file_type, filename = None):
+    '''Handles an export for current list to CSV or TXT'''
+    file_type = file_type.lower()
+
+    if filename: 
+        filename = filename.strip()
+    
+    if file_type not in ("csv", "txt"):
+        print("❌ Unsupported export type. Use <csv> or <txt>.")
+        return
+    storage.export_list(file_type=file_type, filename=filename)
+
+
 # Help argparser text
 
 def print_help():
@@ -178,12 +191,14 @@ def print_help():
         python shop.py add <item> <quantity>
         python shop.py total
         python shop.py clear
+        python shop.py export <csv> <filename>
 
     Commands:
         list                            Shows current shopping list
         add <item> <quantity>           Add item to shopping list
         total                           Shows total sum of items on shopping list
         clear                           Clears current shopping list
+        export <csv or txt> <filename>  Exports list to CSV or TXT file           
 
     Options:
         -l, --list                      Choose shopping lists (default uses shopping.json)

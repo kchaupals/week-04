@@ -1,0 +1,8 @@
+Shopping List: balles_saraksts
+Exported: 2026-03-03_19-49-05
+--------------------------------------------------
+1. Maize   x  13 - 1.50 EUR/piece = 19.50 EUR
+2. Gurķis  x   5 - 1.19 EUR/piece = 5.95 EUR
+3. Makaroni x   4 - 2.44 EUR/piece = 9.76 EUR
+--------------------------------------------------
+Total: 35.21 EUR

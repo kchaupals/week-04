@@ -26,10 +26,11 @@ def main():
     cmd_args = args.args
 
     commands = {
-        "list": (utils.handle_list, 0),
-        "add": (utils.handle_add, 2),
-        "total": (utils.handle_total, 0),
-        "clear": (utils.handle_clear, 0),
+        "list": (utils.handle_list, 0, 0),
+        "add": (utils.handle_add, 2, 2),
+        "total": (utils.handle_total, 0, 0),
+        "clear": (utils.handle_clear, 0, 0),
+        "export": (utils.handle_export, 1, 2),
     }
     
     if cmd not in commands:
@@ -37,17 +38,14 @@ def main():
         utils.print_help()
         return
     
-    handler, expected_args = commands[cmd]
+    handler, min_args, max_args = commands[cmd]
 
-    if expected_args > 0 and len(cmd_args) != expected_args:
-        print(f"❌ Error: '{cmd}' requires exactly {expected_args} arguments\n")
+    if not (min_args <= len(cmd_args) <= max_args):
+        print(f"❌ Error: '{cmd}' requires between {min_args} and {max_args} arguments\n")
         utils.print_help()
         return
-    
-    if expected_args > 0:
-        handler(*cmd_args)
-    else:
-        handler()
+    handler(*cmd_args)
+   
 
 if __name__ == "__main__":
     main()

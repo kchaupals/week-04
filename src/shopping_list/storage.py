@@ -1,15 +1,25 @@
 ''' Ops/Functions for load/save'''
-
-import json
+# Standart library
 import os
+import json
+import platform
+import csv
+import subprocess
+from datetime import datetime
 from decimal import Decimal, InvalidOperation
+# Local modules
+import utils
 
+# Directories
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
+EXPORT_DIR = os.path.join(BASE_DIR, "exports")
+os.makedirs(EXPORT_DIR, exist_ok=True)
 LISTS_DIR = os.path.join(BASE_DIR, "lists")
 os.makedirs(LISTS_DIR, exist_ok=True)
+
 # Prices file is used for all lists that exists
 PRICE_FILE = os.path.join(BASE_DIR, "prices.json")
+
 # By default using shopping.json in base dir
 default_list_file = os.path.join(BASE_DIR, "shopping.json")
 active_list_file = default_list_file
@@ -140,7 +150,75 @@ def clear_list():
     os.makedirs(os.path.dirname(active_list_file) or ".", exist_ok=True)
     with open(active_list_file, "w", encoding="utf-8") as f:
         json.dump([], f)
-   
+
+# Export list options
+
+def export_list(file_type="csv", filename=None):
+    '''Export the current shopping list to CSV or text'''
+    items = load_list()
+    prices = load_prices()
+
+    if not items:
+        print("❌ Nothing to export. List is empty")
+        return
+    
+    # Creating timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+    if filename:
+        base_name = filename
+    else:
+        base_name = get_active_list_name()
+    
+    full_filename = f"{base_name}_{timestamp}.{file_type}"
+    full_path = os.path.join(EXPORT_DIR, full_filename)
+
+    # ------------ CSV ------------
+    if file_type == "csv":
+        with open(full_path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Item", "Quantity", "Price per unit", "Line Total"])
+            for item in items:
+                name = item["item"]
+                qty = int(item.get("qty", 0))
+                price = Decimal(prices.get(name.lower(), "0")) 
+                line_total = utils.calc_line_total(item)
+                writer.writerow([name, qty, f"{price:.2f}", f"{line_total:.2f}"])
+
+    # ------------ TXT ------------
+    elif file_type == "txt":
+        with open(full_path, "w", encoding="utf-8") as f:
+            f.write(f"Shopping List: {base_name}\n")
+            f.write(f"Exported: {timestamp}\n")
+            f.write("-"* 50 + "\n")
+            total = Decimal("0.00")
+            for idx, item in enumerate(items, start=1):
+                name = item["item"]
+                qty = int(item.get("qty", 0))
+                price = Decimal(prices.get(name.lower(), "0"))
+                line_total = utils.calc_line_total(item)
+                total += line_total
+                f.write(f"{idx}. {name:<7} x {qty:>3} - {price:>4} EUR/piece = {line_total:>3} EUR\n")
+            f.write("-"* 50 + "\n")
+            f.write(f"Total: {total:.2f} EUR\n")
+
+    else:
+        print("❌ Unsupported file type. Use <csv> or <txt>.\n")
+        return
+    print(f"✅ Exported to {full_path}")
+
+    # ------------ Auto Open Exported file ------------
+    try:
+        system = platform.system()
+        if system == "Windows":
+            os.startfile(full_path)
+        elif system == "Darwin": # macOS
+            subprocess.run(["open", full_path])
+        else: # Linux
+            subprocess.run(["xdg-open", full_path])
+    except Exception:
+        print("⚠ Could not automatically open the file.")
+
 
 # Input validation 
 
