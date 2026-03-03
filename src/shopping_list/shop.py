@@ -8,18 +8,18 @@ def print_help():
 
     Usage:
         shop.py list
-        shop.py add "<item>" "<price>"
+        shop.py add "<item>" "<quantity>" "<price>"
         shop.py total
         shop.py clear
 
     Commands:
-        list                 Shows current shopping list
-        add <item> <price>   Add item with price to shopping list
-        total                Shows total sum of items on shopping list
-        clear                Clears current shopping list
+        list                            Shows current shopping list
+        add <item> <quantity> <price>   Add item with price to shopping list
+        total                           Shows total sum of items on shopping list
+        clear                           Clears current shopping list
 
     Options:
-        -h, --help           Show this help message and exit
+        -h, --help                      Show this help message and exit
 '''
     print(help_text)
 
