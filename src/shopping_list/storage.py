@@ -80,3 +80,51 @@ def clear_list():
     except OSError:
         print("❌ Failed to clear the list.")
 
+
+# Input validation 
+
+def validate_args(item, qty, price):
+    """Validate and convert add command arguments."""
+
+    if not item or not item.strip():
+        raise ValueError("Item name cannot be empty")
+    
+    try:
+        qty = int(qty)
+        if qty <= 0:
+            raise ValueError("Quantity must be a positive integer")
+    except ValueError:
+        raise ValueError(f"Invalid quantity '{qty}' - must be a positive integer")
+    
+    try:
+        price = Decimal(price)
+        if price <= 0:
+            raise ValueError("Price must be positive")
+    except:
+        raise ValueError(f"Invalid price '{price}' - must be a valid number")
+    
+    return item.strip(), qty, price
+
+
+# Help argparser text
+
+def print_help():
+    help_text = '''
+    Shopping List
+
+    Usage:
+        shop.py list
+        shop.py add "<item>" "<quantity>" "<price>"
+        shop.py total
+        shop.py clear
+
+    Commands:
+        list                            Shows current shopping list
+        add <item> <quantity> <price>   Add item with price to shopping list
+        total                           Shows total sum of items on shopping list
+        clear                           Clears current shopping list
+
+    Options:
+        -h, --help                      Show this help message and exit
+'''
+    return help_text
